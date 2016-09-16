@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/mtharmen/url-shortener/issues"
   },
-  "homepage": "https://github.com/mtharmen/url-shortener#readme"
+  "homepage": "https://github.com/mtharmen/url-shortener#readme",
+  "dependencies": {
+    "valid-url": "^1.0.9"
+  }
 }
