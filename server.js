@@ -1,122 +1,110 @@
 var express = require('express');
 var validUrl = require('valid-url');
-var mongo = require('mongodb').MongoClient;
+var mongoose = require('mongoose');
 
 var app = express();
+
+// Document format
+var urlSchema = mongoose.Schema({
+    original: String,
+    code: String
+});
+var urlDB = mongoose.model('urlDB', urlSchema);
 
 function generateCode() {
     return Math.floor(1000 + Math.random() * 10000).toString();
 }
 
-function checkDB(collection, filter, callback) {
-    collection.find(filter, { original: 1, mini: 1, _id: 0 }).limit(1).toArray(function(err, documents) {
-        if (err) throw err;
+function checkDB(query, filter, callback) {
+    query.exec(function(err, entry) {
+        if (err) return console.err(err);
+        if (entry) {
+            console.log(filter + ' matching Entry found: ' + JSON.stringify(entry));
+        } else {
+            console.log(filter + ' not Found');
+        }
+        callback(entry);
+    });
+}
+
+function createEntry(url, callback) {
+    var num = generateCode().toString();
+    var newEntry = new urlDB({ original: url, code: num });
     
-        // Searching for URL
-        if ('original' in filter) {  
-            if (documents.length) {
-                var entry = { original: documents[0].original, mini: documents[0].mini };
-                console.log('Entry found: ' + JSON.stringify(entry));
-                callback(entry);
-            } else {
-                console.log('Entry not found, creating new entry...');
-                callback( newEntry(collection, filter.original) );
-            }
-        } 
+    newEntry.save(function(err, newEntry){
+        if (err) return console.error(err);
+        console.log('Added new entry: ' + JSON.stringify({ original: newEntry.original, mini: newEntry.code }));
+    });
+    callback({ original: newEntry.original, mini: newEntry.code }); // NOTE: Clean this up
+}
+
+// Connecting to database
+mongoose.connect('mongodb://' + process.env.IP + '/url-shortener');
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+    console.log('Connected to url-shortener');
+    
+    app.use('/', express.static(__dirname + '/styles'));
+    app.use('/new', express.static(__dirname + '/styles'));
+    
+    // Check URLs
+    app.get('/new/:url(*)', function(req, res){
         
-        // Searching for code
-        else if ('mini' in filter) { 
-            if (documents.length) {
-                console.log('Code found');
-                var originalURL = documents[0].original;
-                callback(originalURL);
-            } else {
-                console.log('Code not found');
-                callback({ error: 'Code not Found' });
-            }
-        } 
+        var inputURL = req.params.url;
         
-        else {
-            console.log('Should not be here...');
+        if (!validUrl.isUri(inputURL)){
+            res.json({error: 'Invalid url format, see main page for correct format'});
+        } else {
+            
+            // Checking if entry already exists
+            console.log('Beginning search');
+            var query = urlDB.findOne({original: inputURL}).select('original code -_id');
+            checkDB(query, inputURL, function(message) {
+                if (!message) {
+                    createEntry(inputURL, function(newEntry){
+                         message = newEntry;
+                     });   
+                }
+                res.json(message);
+            });
         }
     });
-}
-
-function newEntry(collection, url) {
-    var code = generateCode().toString();
-    var newLink = { original: url, mini: code };
     
-    collection.insert(newLink, function(err, doc) {
-        if (err) throw err;
-        console.log('Added new entry: ' + JSON.stringify(newLink));
-    });
-    return newLink;
-}
-
-
-
-app.use('/', express.static(__dirname + '/styles'));
-app.use('/new', express.static(__dirname + '/styles'));
-
-app.get('/new/:url(*)', function(req, res){
-    
-    var inputURL = req.params.url;
-    
-    if (!validUrl.isUri(inputURL)){
-        res.json({error: 'Invalid url format, see main page for correct format'});
-    } else {
+    // Checking Code
+    app.get('/:num(*)', function(req, res){
         
-        mongo.connect('mongodb://localhost:27017/url-shortener', function(err, db) {
-            if (err) throw err;
-            else { console.log('Connected to url-shortener.'); }
-            
-            var linksDB = db.collection('links');
-            
+        var num = req.params.num;
+        
+        if (!(num.match(/^\d+$/))){
+            res.json({error: 'Invalid code format, see main page for correct format'});
+        } else {
             
             // Checking if entry already exists
-            console.log('Beginning search');
-            checkDB(linksDB, { original: inputURL }, function(message) {
-                res.json(message);
-                db.close();
-            });
-        });
-    }
-});
-
-
-app.get('/:code(*)', function(req, res){
-    
-    var code = req.params.code;
-    
-    if (!(code.match(/^\d+$/))){
-        res.json({error: 'Invalid code format, see main page for correct format'});
-    } else {
-        
-        mongo.connect('mongodb://localhost:27017/url-shortener', function(err, db) {
-            if (err) throw err;
-            else { console.log('Connected to url-shortener.'); }
-            
-            var linksDB = db.collection('links');
-            
-            
-            // Checking if entry already exists
-            console.log('Beginning search');
-            checkDB(linksDB, { mini: code }, function(message) {
-                if (typeof message === 'string') {
-                    console.log('Redirecting to ' + message);
-                    res.redirect(message);
+            var query = urlDB.findOne({code: num}).select('original code -_id');
+            checkDB(query, num, function(message) {
+                if (!message) {
+                    res.json({error: 'Code not Found'});
                 } else {
-                    res.json(message);
+                    console.log('Redirecting to ' + message.original)
+                    res.redirect(message.original);
                 }
                 
-                db.close();
             });
-        });
-    }
+        }
+    });
+    
 });
-
 
 var port = process.env.PORT || 8080;
 app.listen(port, function() {
     console.log('Listening on port ', port);
 });
+
+// Closes database when node server.js stops
+process.on('SIGINT', function() {  
+  mongoose.connection.close(function () { 
+    console.log('Closing connection to mongoose database'); 
+    process.exit(0); 
+  }); 
+}); 
