@@ -1,7 +1,6 @@
 require('dotenv').config();
 var express = require('express');
 var mongoose = require('mongoose');
-var routes = require('./app/routes/shortenerApp.js');
 var app = express();
 
 // Document format
@@ -23,7 +22,7 @@ db.once('open', function() {
 
 app.use('/', express.static(__dirname + '/app/styles'));
 app.use('/new', express.static(__dirname + '/app/styles'));
-require('/app/routes')(app, urlDB);
+require('./app/routes/shortenerApp.js');
 
 var port = process.env.PORT || 8080;
 
