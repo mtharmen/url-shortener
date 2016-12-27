@@ -15,7 +15,7 @@ var urlSchema = mongoose.Schema({
 var urlDB = mongoose.model('urlDB', urlSchema);
 
 // Connecting to database
-mongoose.connect('mongodb://' + process.env.IP + '/url-shortener');
+mongoose.connect('mongodb://' + process.env.MONGOD_USER + ':' + process.env.MONGOD_PASSWORD + '@' + process.env.IP + ':' + process.env.PORT + '/url-shortener');
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
