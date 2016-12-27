@@ -4,6 +4,10 @@ var validUrl = require('valid-url');
 
 module.exports = function(app, urlDB) {
     
+    app.get('/testing/:num?', function(res, req) {
+        res.send(req.params.num || 'testing')
+    })
+    
     function generateCode() {
         return Math.floor(1000 + Math.random() * 10000).toString();
     }
