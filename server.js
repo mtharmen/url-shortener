@@ -23,7 +23,7 @@ db.once('open', function() {
 
 app.use('/', express.static(__dirname + '/app/styles'));
 app.use('/new', express.static(__dirname + '/app/styles'));
-routes(app, urlDB);
+require('/app/routes')(app, urlDB);
 
 var port = process.env.PORT || 8080;
 
