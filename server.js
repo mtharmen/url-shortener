@@ -22,7 +22,7 @@ db.once('open', function() {
 
 app.use('/', express.static(__dirname + '/app/styles'));
 app.use('/new', express.static(__dirname + '/app/styles'));
-require('app/routes/shortenerApp');
+require('/app/routes/shortenerApp');
 
 var port = process.env.PORT || 8080;
 
