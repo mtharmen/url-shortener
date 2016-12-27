@@ -16,7 +16,7 @@ module.exports = function(app, urlDB) {
         query.exec(function(err, entry) {
             if (err) return console.err(err);
             if (entry) {
-                console.log(filter + '| matching entry found: ' + JSON.stringify(entry));
+                console.log(filter + ' | matching entry found: ' + JSON.stringify(entry));
             } else {
                 console.log(filter + ' not Found');
             }
