@@ -4,10 +4,6 @@ var mongoose = require('mongoose');
 var routes = require('./app/routes/shortenerApp.js');
 var app = express();
 
-app.use('/', express.static(__dirname + '/app/styles'));
-app.use('/new', express.static(__dirname + '/app/styles'));
-
-
 // Document format
 var urlSchema = mongoose.Schema({
     original: String,
@@ -22,15 +18,15 @@ mongoose.connect(mongodbUrl);
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
-    console.log('Connected to url-shortener');
-    
-    routes(app, urlDB);
-    
+    console.log('Connected to url-shortener');    
 });
 
-
+app.use('/', express.static(__dirname + '/app/styles'));
+app.use('/new', express.static(__dirname + '/app/styles'));
+routes(app, urlDB);
 
 var port = process.env.PORT || 8080;
+
 app.listen(port, function() {
     console.log('Listening on port ' + port);
 });
