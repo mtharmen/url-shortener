@@ -1,3 +1,4 @@
+require('dotenv').config();
 var express = require('express');
 var mongoose = require('mongoose');
 var routes = require('./app/routes/shortenerApp.js');
@@ -15,7 +16,9 @@ var urlSchema = mongoose.Schema({
 var urlDB = mongoose.model('urlDB', urlSchema);
 
 // Connecting to database
-mongoose.connect('mongodb://' + process.env.MONGOD_USER + ':' + process.env.MONGOD_PASSWORD + '@' + process.env.IP + ':' + process.env.PORT + '/url-shortener');
+var mongodbUrl = 'mongodb://' + process.env.MONGOD_USER + ':' + process.env.MONGOD_PASSWORD + '@' + process.env.IP + ':' + process.env.PORT + '/mthar-url-shortener'
+console.log(mongodbUrl)
+mongoose.connect(mongodbUrl);
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
@@ -29,7 +32,7 @@ db.once('open', function() {
 
 var port = process.env.PORT || 8080;
 app.listen(port, function() {
-    console.log('Listening on port ', port);
+    console.log('Listening on port ' + port);
 });
 
 // Closes database when node server.js stops
