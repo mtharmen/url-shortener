@@ -7,18 +7,18 @@
 
 ### Example usage:
 ```text
-https://mtharmen-mini-url.herokuapp.com/new/https://www.google.com
-https://mtharmen-mini-url.com/new/https://foo.com:800
+https://mtharmen-url-shortener.herokuapp.com/new/https://www.google.com
+https://mtharmen-url-shortener.com/new/https://foo.com:800
 ```
 
 ### Example output:
 ```js
-{ "original_url":"https://www.google.com", "mini_url":"https://mtharmen-mini-url.herokuapp.com/2249" }
+{ "original_url":"https://www.google.com", "mini_url":"https://mtharmen-url-shortener.herokuapp.com/9664" }
 ```
 
 ### Usage:
 ```text
-https://mtharmen-mini-url.herokuapp.com/2249
+https://mtharmen-url-shortener.herokuapp.com/9664
 ```
 
 ### Will redirect to:
