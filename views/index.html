@@ -1,0 +1,40 @@
+<html lang="en">
+  <head>
+    <title>mtharmen URL Shortener Microservice</title>
+  </head>
+  <body>
+    <h1>
+      API Basejump: Timestamp Microservice
+    </h1>
+    <blockquote>
+      <h3>User stories:</h3>
+      <ol>
+        <li>I can POST a URL to <code>https://tiny-butter.glitch.me/api/shorturl/new</code> and I will receive a shortened URL in the JSON response.</li>
+        <li>If I pass an invalid URL that doesn't follow the <code>http(s)://www.example.com(/more/routes)</code> format, the JSON response will contain an error like <code>{"error":"invalid URL"}</code></li>
+        <li>When I visit the shortened URL, it will redirect me to my original link.</li>
+      </ol>
+      <h3>Example usage:</h3>
+      <code>https://tiny-butter.glitch.me/api/shorturl/new/https://www.google.ca</code><br>
+      <h3>Example output:</h3>
+      <code>
+        { "original_url":"https://www.google.ca", "code":"4645" }
+      </code>
+      
+      <h3>Try it Out:</h3>
+      <form action="api/shorturl/new" method="POST">
+        <label for="url-full">URL: </label>
+        <input id="url-full" type="text" name="url" value="https://www.freecodecamp.com">
+        <input type="submit" value="Get Code">
+      </form>
+
+      <h3>Usage:</h3>
+      <a href="https://tiny-butter.glitch.me/api/shorturl/4645" target="_blank">https://tiny-butter.glitch.me/api/shorturl/4645</a>
+      <h3>Will redirect to:</h3>
+      <code>
+        https://www.google.ca
+      </code>
+    </blockquote>
+    <br />
+    <a href="https://github.com/mtharmen/url-shortener" target="_blank">Github Source</a>
+  </body>
+</html>
