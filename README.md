@@ -7,17 +7,17 @@
 
 ### Example usage:
 ```text
-https://tiny-butter.glitch.me/api/shorturl/new/https://www.google.ca
+/api/shorturl/new/https://www.google.ca
 ```
 
 ### Example output:
 ```js
-{ "original_url":"https://www.google.ca", "code":"4645" }
+{ "original_url": "https://www.google.ca", "code": "4645" }
 ```
 
 ### Usage:
 ```text
-https://tiny-butter.glitch.me/api/shorturl/4645
+/api/shorturl/4645
 ```
 
 ### Will redirect to:
