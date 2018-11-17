@@ -1,4 +1,4 @@
-# API Basejump: Timestamp Microservice
+# API Basejump: URL Shortener Microservice
 
 ## User stories:
 
